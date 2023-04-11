@@ -1,85 +1,85 @@
-<script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
+  <div class="login-container">
+    <div class="login-form">
+      <h1 class="form-title">登录</h1>
+      <form>
+        <div class="form-group">
+          <label for="email">电话号码/邮箱：</label>
+          <input type="email" name="email" id="email" v-model="email" required>
+        </div>
+        <div class="form-group">
+          <label for="password">密码：</label>
+          <input type="password" name="password" id="password" v-model="password" required>
+        </div>
+        <button type="submit" class="btn-login">登录</button>
+      </form>
     </div>
-  </header>
-
-  <RouterView />
+  </div>
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+<script>
+export default {
+  name:"LoginView",
+  data() {
+      return {
+      email: '',
+      password: '',
+      }
+  },
+}
+</script>
+<style>
+.login-container {
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+background-color: #f7f7f7;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.login-form {
+background-color: #fff;
+border-radius: 5px;
+box-shadow: 0 0 10px #ccc;
+padding: 20px;
+width: 400px;
 }
 
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+.form-title {
+font-size: 24px;
+margin-bottom: 20px;
+text-align: center;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+.form-group {
+margin-bottom: 20px;
 }
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+label {
+display: block;
+margin-bottom: 5px;
 }
 
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+input[type="email"],
+input[type="password"] {
+width: 100%;
+padding: 15px;
+border-radius: 5px;
+border: 1px solid #ccc;
 }
 
-nav a:first-of-type {
-  border: 0;
+button[type="submit"] {
+display: block;
+width: 100%;
+padding: 10px;
+border-radius: 5px;
+border: none;
+background-color: #007aff;
+color: #fff;
+font-size: 18px;
+cursor: pointer;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+button[type="submit"]:hover {
+background-color: #0062cc;
 }
 </style>
