@@ -1,12 +1,11 @@
-/* 去除滚动条 */
-html{
-    height: 100%;
+/* 去除body内外边距 */
+body{
     width: 100%;
-    overflow: hidden; 
+    height: 100%;
+    margin: 0;
+    padding: 0;
  }
- body{
-  width: 100%;
-     height: 100%;
-     overflow-y: scroll;
-     padding-right: 17px;
- }
+/* 去除滚动条 */
+*::-webkit-scrollbar {
+    width: 0px;
+}
