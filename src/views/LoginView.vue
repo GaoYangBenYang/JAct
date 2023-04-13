@@ -10,8 +10,12 @@
         <div class="form-group">
           <label for="password">密码：</label>
           <input type="password" name="password" id="password" v-model="password" required>
-          <div class="registration">立即注册</div>
-          <div class="forget-the-password">忘记密码</div>
+          <div class="registration">没有账号？
+            <a href="" >立即注册</a>
+          </div>
+          <div class="forget-password">
+             <a href="">忘记密码</a> 
+          </div>
         </div>
         <button type="submit" class="btn-login" @click="login">登录</button>
       </form>
@@ -65,13 +69,16 @@ margin-bottom: 20px;
   margin-top: 10px;
   margin-bottom: 10px;
   float: left;
-  color: rgb(20, 78, 238);
 }
 
-.forget-the-password{
+.forget-password{
   margin-top: 10px;
   margin-bottom: 10px;
   float: right;
+}
+
+a {
+  text-decoration: none;
   color: rgb(20, 78, 238);
 }
 

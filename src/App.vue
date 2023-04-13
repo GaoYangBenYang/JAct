@@ -4,62 +4,41 @@
       <h1 class="form-title">Welcome to Problem Focus!</h1>
       <form>
         <div class="form-group">
-          <label for="phone-number">电话号码:</label>
-          <input type="tel" name="tel" id="tel" v-model="tel" required>
-        </div>
-        <div class="form-group">
-          <label for="email">邮箱:</label>
+          <label for="email">电话号码/邮箱：</label>
           <input type="email" name="email" id="email" v-model="email" required>
         </div>
         <div class="form-group">
-          <label for="password">密码:</label>
+          <label for="password">密码：</label>
           <input type="password" name="password" id="password" v-model="password" required>
+          <div class="registration">没有账号？
+            <a href="" >立即注册</a>
+          </div>
+          <div class="forget-password">
+             <a href="">忘记密码</a> 
+          </div>
         </div>
-        <div class="form-group">
-          <label for="confirm-password">确认密码:</label>
-          <input type="password" name="confirm-password" id="confirm-password" v-model="confirmPassword" required>
-        </div>
-        <button type="submit" class="btn-login" @click="login">注册</button>
+        <button type="submit" class="btn-login" @click="login">登录</button>
       </form>
     </div>
   </div>
 </template>
 <script>
-import axios from 'axios'
 export default {
   name:"LoginView",
   data() {
       return {
-      tel:'',
       email: '',
       password: '',
-      confirmPassword:''
       }
   },
   methods:{
     login() {
-      //实现登录逻辑
-      axios.post('http://localhost:8080/v1/user',{
-          tel:this.tel,
-          email: this.email,
-          password: this.password, 
-      })
-      .then(function (response) {
-        // 处理成功情况
-        // console.log(response);
-      })
-      .catch(function (error) {
-        // 处理错误情况
-        // console.log(error);
-      })
-      .then(function () {
-        // 总是会执行
-      });
+      // TODO: 实现登录逻辑
     },
   }
 }
 </script>
-<style scoped>
+<style>
 .login-container {
 display: flex;
 justify-content: center;
@@ -90,13 +69,16 @@ margin-bottom: 20px;
   margin-top: 10px;
   margin-bottom: 10px;
   float: left;
-  color: rgb(20, 78, 238);
 }
 
-.forget-the-password{
+.forget-password{
   margin-top: 10px;
   margin-bottom: 10px;
   float: right;
+}
+
+a {
+  text-decoration: none;
   color: rgb(20, 78, 238);
 }
 
@@ -105,7 +87,6 @@ display: block;
 margin-bottom: 5px;
 }
 
-input[type="tel"],
 input[type="email"],
 input[type="password"] {
 width: 95%;
