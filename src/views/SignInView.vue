@@ -23,6 +23,7 @@
   </div>
 </template>
 <script>
+import axios from 'axios'
 export default {
   name:"LoginView",
   data() {
@@ -34,11 +35,26 @@ export default {
   methods:{
     login() {
       // TODO: 实现登录逻辑
-    },
+      axios.post('http://localhost:8080/v1/user', {
+        email: 'myemail',
+        password: 'mypassword'
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      })
+      .then(response => {
+        console.log(response)
+      })
+      .catch(error => {
+        console.log(error)
+      })
+          },
   }
 }
 </script>
-<style>
+<style scoped>
 .login-container {
 display: flex;
 justify-content: center;
