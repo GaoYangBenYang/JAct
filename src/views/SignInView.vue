@@ -5,7 +5,7 @@
       <form>
         <div class="form-group">
           <label for="email">电话号码/邮箱：</label>
-          <input type="email" name="email" id="email" v-model="email" required>
+          <input type="email" name="email" id="email" v-model="phone_number_or_email" required>
         </div>
         <div class="form-group">
           <label for="password">密码：</label>
@@ -28,15 +28,15 @@ export default {
   name:"LoginView",
   data() {
       return {
-      email: '',
+      phone_number_or_email: '',
       password: '',
       }
   },
   methods:{
     login() {
       // TODO: 实现登录逻辑
-      axios.post('http://localhost:8080/v1/user', {
-        email: 'myemail',
+      axios.post('http://localhost:8080/v1/user/:phone_number_or_email', {
+        phone_number_or_email: 'myemail',
         password: 'mypassword'
       }, {
         headers: {
