@@ -1,5 +1,6 @@
 import { useSignal } from "@preact/signals";
 import Counter from "../islands/Counter.tsx";
+import Login from "../islands/Login.tsx";
 
 export default function Home() {
   const count = useSignal(3);
@@ -19,6 +20,7 @@ export default function Home() {
           <code class="mx-2">./routes/index.tsx</code> file, and refresh.
         </p>
         <Counter count={count} />
+        <Login/>
       </div>
     </div>
   );
