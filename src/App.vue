@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import Login from "./components/Login.vue";
+  import Navbar from "./components/navbar/Navbar.vue";
 </script>
 
 <template>
 
-  <Login/>
-
+  <div>
+      <Navbar/>
+  </div>
 
 </template>
 
