@@ -22,6 +22,7 @@ public class Switch {
 
     public static void main(String[] args) {
         int day = 11;
+        //Switch表达式
         String dayName = switch (day) {
             case 1,10,6 -> "Monday";
             case 2 -> "Tuesday";
@@ -38,5 +39,34 @@ public class Switch {
         };
         
         System.out.println("Day: " + dayName);
+
+
+        //Switch语法
+        switch (day) {
+            case 1,10,6 -> {
+                System.out.println("111");
+            }
+            case 2 -> {
+                System.out.println("222");
+            }
+            case 3 -> {
+                System.out.println("333");
+            }
+            case 4 -> {
+                System.out.println("444");
+            }
+            case 5 -> {
+                System.out.println("555");
+            }
+            default -> {
+                var a = "asd";
+                var b = "sdd";
+                System.out.println(a+b);
+
+            }
+        };
+
+
+
     }
 }
