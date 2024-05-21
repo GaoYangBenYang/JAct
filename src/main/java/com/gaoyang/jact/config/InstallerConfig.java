@@ -16,6 +16,8 @@ import java.util.Set;
 @Configuration
 public class InstallerConfig {
 
+    private static final String FLAG_FILE = System.getProperty("user.home") + "/.jact/installed.flag";
+
     @Bean
     public CommandLineRunner installer() {
         return args -> {
@@ -30,6 +32,7 @@ public class InstallerConfig {
             }
         };
     }
+
 
     /**
      * 获取JAR文件路径
@@ -46,6 +49,13 @@ public class InstallerConfig {
         } else {
             createUnixScript(jarPath);
         }
+        createFlagFile();
+    }
+
+    private void createFlagFile() throws IOException {
+        File flagFile = new File(FLAG_FILE);
+        flagFile.getParentFile().mkdirs();
+        flagFile.createNewFile();
     }
 
     private void createWindowsScript(String jarPath) throws IOException {
