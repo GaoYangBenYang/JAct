@@ -2,11 +2,13 @@ spring:
   application:
     name: Jact
   main:
+    #关闭logo
     banner-mode: off
-
+    #启动懒加载
+    lazy-initialization: true
 logging:
   level:
-    root: info
-
+    #关闭日志信息
+    root: off
 server:
   port: 8080

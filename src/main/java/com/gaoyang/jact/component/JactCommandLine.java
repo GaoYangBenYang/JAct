@@ -4,8 +4,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
+import java.io.File;
+
 @Component
 public class JactCommandLine implements CommandLineRunner {
+
+    private static final String FLAG_FILE = System.getProperty("user.home") + "/.jact/installed.flag";
 
     @Override
     public void run(String... args) {
@@ -27,7 +31,9 @@ public class JactCommandLine implements CommandLineRunner {
 
         @Override
         public void run() {
-            CommandLine.usage(this, System.out);
+            if (!new File(FLAG_FILE).exists()) {
+                CommandLine.usage(this, System.out);
+            }
         }
     }
 }
