@@ -23,7 +23,7 @@ public class DockerClientConfig {
                 .build();
 
         DockerHttpClient dockerHttpClient = new ApacheDockerHttpClient.Builder()
-                .dockerHost(URI.create("tcp://0.0.0.0:2375"))
+                .dockerHost(URI.create("tcp://192.168.1.1:2375"))
                 .maxConnections(100)
                 .connectionTimeout(Duration.ofSeconds(30))
                 .responseTimeout(Duration.ofSeconds(45))
