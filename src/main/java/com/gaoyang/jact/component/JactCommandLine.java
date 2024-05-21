@@ -1,4 +1,4 @@
-package com.gaoyang.jactions.component;
+package com.gaoyang.jact.component;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

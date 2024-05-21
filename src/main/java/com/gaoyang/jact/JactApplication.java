@@ -1,12 +1,12 @@
-package com.gaoyang.jactions;
+package com.gaoyang.jact;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class JActionsApplication {
+public class JactApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(JActionsApplication.class, args);
+        SpringApplication.run(JactApplication.class, args);
     }
 }
