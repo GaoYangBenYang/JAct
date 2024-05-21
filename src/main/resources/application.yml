@@ -1,6 +1,6 @@
 spring:
   application:
-    name: JAction
+    name: Jact
   main:
     banner-mode: off
 

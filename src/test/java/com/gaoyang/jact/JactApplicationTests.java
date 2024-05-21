@@ -1,10 +1,10 @@
-package com.gaoyang.jactions;
+package com.gaoyang.jact;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class JActionsApplicationTests {
+class JactApplicationTests {
 
     @Test
     void contextLoads() {

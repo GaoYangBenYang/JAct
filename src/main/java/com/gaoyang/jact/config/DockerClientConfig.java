@@ -1,4 +1,4 @@
-package com.gaoyang.jactions.config;
+package com.gaoyang.jact.config;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
