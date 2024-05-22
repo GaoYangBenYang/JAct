@@ -14,7 +14,6 @@ import java.time.Duration;
 @Configuration
 public class DockerClientConfig {
 
-
     @Bean
     public DockerClient dockerClient() {
 

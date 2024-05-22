@@ -26,5 +26,6 @@ public class DockerManager {
 
     public void ping() {
         dockerClient.pingCmd().exec();
+        System.out.println("连接成功！");
     }
 }
