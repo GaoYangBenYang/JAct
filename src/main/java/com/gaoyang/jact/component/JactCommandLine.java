@@ -16,7 +16,7 @@ public class JactCommandLine implements CommandLineRunner {
         new CommandLine(new JactCommand()).execute(args);
     }
 
-    @CommandLine.Command(name = "jact", mixinStandardHelpOptions = true, version = "jact 1.0", description = "Jact CLI application")
+    @CommandLine.Command(name = "jact", mixinStandardHelpOptions = false, version = "jact 1.0", description = "Jact CLI application")
     private static class JactCommand implements Runnable {
 
         @CommandLine.Command(name = "run", description = "Run the application")
