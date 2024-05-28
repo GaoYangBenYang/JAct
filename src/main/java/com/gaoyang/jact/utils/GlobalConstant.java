@@ -1,4 +1,4 @@
-package com.gaoyang.jact.Utils;
+package com.gaoyang.jact.utils;
 
 import java.io.File;
 
@@ -20,9 +20,13 @@ public final class GlobalConstant {
      */
     public static final String USER_HOME = System.getProperty("user.home");
     /**
-     * 配置文件安装目录
+     * 配置文件
      */
     public static final String JACT_XML = "/.jact/jact.xml";
+    /**
+     * 日志文件
+     */
+    public static final String JACT_LOG = "/.jact/jact.log";
     /**
      * JAVA程序类路径
      */
