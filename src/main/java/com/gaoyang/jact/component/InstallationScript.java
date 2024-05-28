@@ -71,13 +71,14 @@ public class InstallationScript {
     private void createWindowsScript() {
         try {
             // 脚本内容
-            String scriptContent = "@echo off\n"
-                    + "setlocal\n"
-                    + "REM 获取当前批处理文件所在的目录\n"
-                    + "set SCRIPT_DIR=%~dp0\n"
-                    + "REM 执行jact.exe\n"
-                    + "\"%SCRIPT_DIR%jact.exe\" %*\n"
-                    + "endlocal";
+            String scriptContent = """
+                    @echo off
+                    setlocal
+                    REM 获取当前批处理文件所在的目录
+                    set SCRIPT_DIR=%~dp0
+                    REM 执行jact.exe
+                    "%SCRIPT_DIR%jact.exe" %*
+                    endlocal""";
             VirtualThreadPool.asyncOutput(Emoji.SUCCESSFUL + " Initializes the script content.");
 
             // 获取用户的主目录路径，将脚本配置在用户主目录下的.jact目录下
@@ -127,11 +128,12 @@ public class InstallationScript {
     private void createUnixScript() throws IOException {
         String scriptPath = GlobalConstant.USER_HOME + "/.jact/jact";
         Files.createDirectories(Paths.get(GlobalConstant.USER_HOME + "/.jact"));
-        String scriptContent = "#!/bin/bash\n"
-                + "# 获取当前脚本所在的目录\n"
-                + "SCRIPT_DIR=\"$(cd \"$(dirname \"${BASH_SOURCE[0]}\")\" && pwd)\"\n"
-                + "# 执行jact\n"
-                + "\"$SCRIPT_DIR/jact.exe\" \"$@\"";
+        String scriptContent = """
+                #!/bin/bash
+                # 获取当前脚本所在的目录
+                SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+                # 执行jact
+                "$SCRIPT_DIR/jact.exe" "$@\"""";
         Files.write(Paths.get(scriptPath), scriptContent.getBytes());
         //执行脚本
         Set<PosixFilePermission> perms = new HashSet<>();
