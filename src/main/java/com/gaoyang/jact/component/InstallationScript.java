@@ -1,8 +1,8 @@
 package com.gaoyang.jact.component;
 
-import com.gaoyang.jact.Utils.Emoji;
-import com.gaoyang.jact.Utils.GlobalConstant;
-import com.gaoyang.jact.Utils.VirtualThreadPool;
+import com.gaoyang.jact.utils.Emoji;
+import com.gaoyang.jact.utils.GlobalConstant;
+import com.gaoyang.jact.utils.asynchronous.VirtualThreadPool;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +32,7 @@ public class InstallationScript {
             try {
                 createScript();
             } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
+                VirtualThreadPool.asyncLog(e.getMessage());
             }
         };
     }
@@ -49,17 +49,6 @@ public class InstallationScript {
             createUnixScript();
         }
         createXMLFile();
-    }
-
-    /**
-     * 创建Jact CLI XML配置文件
-     *
-     * @throws IOException
-     */
-    private void createXMLFile() throws IOException {
-        File flagFile = new File(GlobalConstant.JACT_XML);
-        flagFile.getParentFile().mkdirs();
-        flagFile.createNewFile();
     }
 
     /**
@@ -125,6 +114,11 @@ public class InstallationScript {
         }
     }
 
+    /**
+     * 创建Unix二进制文件启动脚本以及环境变量配置
+     *
+     * @throws IOException
+     */
     private void createUnixScript() throws IOException {
         String scriptPath = GlobalConstant.USER_HOME + "/.jact/jact";
         Files.createDirectories(Paths.get(GlobalConstant.USER_HOME + "/.jact"));
@@ -155,4 +149,16 @@ public class InstallationScript {
         Files.write(Paths.get(GlobalConstant.USER_HOME + "/.jact/setpath.sh"), exportCommand.getBytes());
         System.out.println("jact command installed. You may need to restart your terminal.");
     }
+
+    /**
+     * 创建Jact CLI XML配置文件
+     *
+     * @throws IOException
+     */
+    private void createXMLFile() throws IOException {
+        File flagFile = new File(GlobalConstant.JACT_XML);
+        flagFile.getParentFile().mkdirs();
+        flagFile.createNewFile();
+    }
+
 }

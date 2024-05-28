@@ -1,4 +1,4 @@
-package com.gaoyang.jact.Utils;
+package com.gaoyang.jact.utils;
 
 /**
  * emoji图标类
