@@ -2,7 +2,8 @@ package com.gaoyang.jact.component;
 
 import com.gaoyang.jact.utils.Emoji;
 import com.gaoyang.jact.utils.GlobalConstant;
-import com.gaoyang.jact.utils.asynchronous.VirtualThreadPool;
+import com.gaoyang.jact.utils.asynchronous.ConsoleLog;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,13 +27,20 @@ import java.util.Set;
 @Configuration
 public class InstallationScript {
 
+    private final ConsoleLog consoleLog;
+    
+    @Autowired
+    public InstallationScript(ConsoleLog consoleLog) {
+        this.consoleLog = consoleLog;
+    }
+
     @Bean
     public CommandLineRunner installer() {
         return args -> {
             try {
                 createScript();
             } catch (IOException | InterruptedException e) {
-                VirtualThreadPool.asyncLog(e.getMessage());
+//                VirtualThreadPool.asyncLog(e.getMessage());
             }
         };
     }
@@ -68,7 +76,7 @@ public class InstallationScript {
                     REM 执行jact.exe
                     "%SCRIPT_DIR%jact.exe" %*
                     endlocal""";
-            VirtualThreadPool.asyncOutput(Emoji.SUCCESSFUL + " Initializes the script content.");
+            consoleLog.handleTask(Emoji.SUCCESSFUL + " Initializes the script content.");
 
             // 获取用户的主目录路径，将脚本配置在用户主目录下的.jact目录下
             String scriptPath = GlobalConstant.USER_HOME + "\\.jact\\jact.bat";
@@ -77,13 +85,13 @@ public class InstallationScript {
             File scriptFile = new File(scriptPath);
             boolean scriptFileDir = scriptFile.getParentFile().mkdirs();
             if (!scriptFileDir) {
-                VirtualThreadPool.asyncOutput(Emoji.WARN + " Script path already exists.");
+                consoleLog.handleTask(Emoji.WARN + " Script path already exists.");
             }
             // 写入脚本内容
             try (FileWriter writer = new FileWriter(scriptPath)) {
                 writer.write(scriptContent);
             }
-            VirtualThreadPool.asyncOutput(Emoji.SUCCESSFUL + " Script writing success. Script file path: " + scriptPath);
+            consoleLog.handleTask(Emoji.SUCCESSFUL + " Script writing success. Script file path: " + scriptPath);
 
             // 备份当前的PATH
             String currentPath = System.getenv("PATH");
@@ -91,7 +99,7 @@ public class InstallationScript {
             try (FileWriter writer = new FileWriter(backupPath)) {
                 writer.write(currentPath);
             }
-            VirtualThreadPool.asyncOutput(Emoji.SUCCESSFUL + " Environment variable backup succeeded. Backup file path: " + backupPath);
+            consoleLog.handleTask(Emoji.SUCCESSFUL + " Environment variable backup succeeded. Backup file path: " + backupPath);
 
             // 将脚本路径追加到现有PATH中
             String scriptFilePath = scriptFile.getParent();
@@ -102,15 +110,15 @@ public class InstallationScript {
             Process process = processBuilder.start();
             int exitCode = process.waitFor();
             if (exitCode == 0) {
-                VirtualThreadPool.asyncOutput(Emoji.SUCCESSFUL + " Environment variable write successfully.");
-                VirtualThreadPool.asyncOutput(Emoji.SUCCESSFUL + " jact command installed. You may need to restart your terminal.");
+                consoleLog.handleTask(Emoji.SUCCESSFUL + " Environment variable write successfully.");
+                consoleLog.handleTask(Emoji.SUCCESSFUL + " jact command installed. You may need to restart your terminal.");
             } else {
-                VirtualThreadPool.asyncOutput(Emoji.ERROR + " Failed to update environment variable. Exit code: " + exitCode);
+                consoleLog.handleTask(Emoji.ERROR + " Failed to update environment variable. Exit code: " + exitCode);
             }
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
-            VirtualThreadPool.shutdownExecutor();
+            consoleLog.shutdown();
         }
     }
 
