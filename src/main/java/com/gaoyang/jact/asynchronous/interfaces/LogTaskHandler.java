@@ -1,9 +1,9 @@
-package com.gaoyang.jact.utils.asynchronous;
+package com.gaoyang.jact.asynchronous.interfaces;
 
 /**
  * 任务处理接口，定义任务处理方法
  */
-public interface TaskHandler {
+public interface LogTaskHandler {
     /**
      * 处理任务
      *

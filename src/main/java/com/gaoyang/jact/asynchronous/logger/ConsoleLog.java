@@ -1,5 +1,7 @@
-package com.gaoyang.jact.utils.asynchronous;
+package com.gaoyang.jact.asynchronous.logger;
 
+import com.gaoyang.jact.asynchronous.VirtualThreadPool;
+import com.gaoyang.jact.asynchronous.interfaces.LogTaskHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -13,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 控制台日志输出类，负责将日志消息异步输出到控制台。
  */
 @Component
-public class ConsoleLog implements TaskHandler {
+public class ConsoleLog implements LogTaskHandler {
 
     private static final Logger logger = LogManager.getLogger(ConsoleLog.class);
     /**
@@ -51,6 +53,7 @@ public class ConsoleLog implements TaskHandler {
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+                logger.error("Description Console log output failed", e);
             }
         });
     }
@@ -75,6 +78,7 @@ public class ConsoleLog implements TaskHandler {
             messageQueue.put(message);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            logger.error("Failed to output console log", e);
         }
     }
 
@@ -88,6 +92,7 @@ public class ConsoleLog implements TaskHandler {
             messageQueue.put(POISON_PILL);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            logger.error("Failed to turn off console log output", e);
         }
         VirtualThreadPool.shutdownExecutor(60, TimeUnit.SECONDS);
     }

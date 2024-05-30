@@ -1,15 +1,16 @@
-package com.gaoyang.jact.service;
+package com.gaoyang.jact.service.workflow;
 
+import com.gaoyang.jact.service.docker.DockerService;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
 @Service
 public class WorkflowRunner {
-    private final DockerManager dockerManager;
+    private final DockerService dockerService;
 
-    public WorkflowRunner(DockerManager dockerManager) {
-        this.dockerManager = dockerManager;
+    public WorkflowRunner(DockerService dockerService) {
+        this.dockerService = dockerService;
     }
 
     public void runWorkflow(Map<String, Object> workflowDefinition) {
@@ -22,6 +23,6 @@ public class WorkflowRunner {
 //
 //            dockerManager.stopAndRemoveContainer(containerId);
 //        }
-        dockerManager.ping();
+        dockerService.ping();
     }
 }

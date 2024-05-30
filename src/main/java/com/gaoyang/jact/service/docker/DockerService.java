@@ -1,15 +1,15 @@
-package com.gaoyang.jact.service;
+package com.gaoyang.jact.service.docker;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DockerManager {
+public class DockerService {
 
     private final DockerClient dockerClient;
 
-    public DockerManager(DockerClient dockerClient) {
+    public DockerService(DockerClient dockerClient) {
         this.dockerClient = dockerClient;
     }
 
