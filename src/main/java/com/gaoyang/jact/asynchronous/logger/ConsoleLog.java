@@ -94,6 +94,6 @@ public class ConsoleLog implements LogTaskHandler {
             Thread.currentThread().interrupt();
             logger.error("Failed to turn off console log output", e);
         }
-        VirtualThreadPool.shutdownExecutor(60, TimeUnit.SECONDS);
+        VirtualThreadPool.shutdownExecutor(1, TimeUnit.SECONDS);
     }
 }
