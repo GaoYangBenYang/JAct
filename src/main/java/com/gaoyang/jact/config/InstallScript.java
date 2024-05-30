@@ -29,13 +29,17 @@ import java.util.Set;
 @Configuration
 public class InstallScript {
     /**
-     * 安装环境对应的操作系统
+     * 操作系统
      */
     private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
     /**
      * 系统分隔符
      */
     private static final String PATH_SEPARATOR = File.pathSeparator;
+    /**
+     * 系统路径分隔符
+     */
+    private static final String SEPARATOR = File.separator;
     /**
      * 用户目录
      */
@@ -69,6 +73,10 @@ public class InstallScript {
             endlocal
             """;
     /**
+     * Windows脚本路径
+     */
+    private static final String WIN_SCRIPT_PATH = USER_HOME + SEPARATOR + ".jact" + SEPARATOR + "jact.bat";
+    /**
      * Unix脚本内容
      */
     private static final String UNIX_SCRIPT_CONTENT = """
@@ -78,6 +86,10 @@ public class InstallScript {
             # 执行jact
             "$SCRIPT_DIR/jact.exe" "$@"
             """;
+    /**
+     * Unix脚本路径
+     */
+    private static final String UNIX_SCRIPT_PATH = USER_HOME + SEPARATOR + ".jact" + SEPARATOR + "jact.bat";
 
     private final ConsoleLog consoleLog = ConsoleLog.getInstance();
 
@@ -104,10 +116,8 @@ public class InstallScript {
     private void createWindowsScript() {
         try {
 
-            logSuccess("Initializes the script content.");
-            // 获取用户的主目录路径，将脚本配置在用户主目录下的.jact目录下
+            // 脚本获取用户的主目录路径，将脚本配置在用户主目录下的.jact目录下
             String scriptPath = USER_HOME + "\\.jact\\jact.bat";
-
             // 在Windows脚本路径设置时，创建父目录（如果不存在）
             File scriptFile = new File(scriptPath);
             boolean scriptFileDir = scriptFile.getParentFile().mkdirs();
