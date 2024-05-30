@@ -3,15 +3,15 @@ package com.gaoyang.jact.command;
 import com.gaoyang.jact.asynchronous.VirtualThreadPool;
 import picocli.CommandLine;
 
-// 定义版本命令类
-@CommandLine.Command(name = "version", description = "Show the application version")
-public class VersionCommand implements Runnable {
+// 定义ping命令类
+@CommandLine.Command(name = "ping", description = "Ping the application")
+public class PingCommand implements Runnable {
 
     @Override
     public void run() {
         // 使用虚拟线程池执行命令
         VirtualThreadPool.submitTask(() -> {
-            System.out.println("Jact version 1.0");
+            System.out.println("Pong");
         });
     }
 }

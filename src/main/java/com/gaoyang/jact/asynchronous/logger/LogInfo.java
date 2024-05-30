@@ -107,7 +107,7 @@ public class LogInfo implements LogTaskHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        VirtualThreadPool.shutdownExecutor(60, TimeUnit.SECONDS);
+        VirtualThreadPool.shutdownExecutor(1, TimeUnit.SECONDS);
     }
 
     /**
