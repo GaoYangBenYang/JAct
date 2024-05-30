@@ -1,4 +1,4 @@
-package com.gaoyang.jact.service;
+package com.gaoyang.jact.service.workflow;
 
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;

@@ -1,6 +1,8 @@
-package com.gaoyang.jact.utils.asynchronous;
+package com.gaoyang.jact.asynchronous.logger;
 
 
+import com.gaoyang.jact.asynchronous.VirtualThreadPool;
+import com.gaoyang.jact.asynchronous.interfaces.LogTaskHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -17,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 日志记录类，负责将日志消息异步写入文件。
  */
 @Component
-public class LogInfo implements TaskHandler {
+public class LogInfo implements LogTaskHandler {
 
     private static final Logger logger = LogManager.getLogger(LogInfo.class);
     /**

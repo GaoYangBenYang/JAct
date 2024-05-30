@@ -1,11 +1,11 @@
-package com.gaoyang.jact.utils;
+package com.gaoyang.jact.utils.constant;
 
 import java.io.File;
 
 /**
- * 全局常量
+ * 文件路径常量
  */
-public final class GlobalConstant {
+public final class FileConstant {
 
     /**
      * 安装环境对应的操作系统
@@ -26,7 +26,7 @@ public final class GlobalConstant {
     /**
      * 日志文件
      */
-    public static final String JACT_LOG = "/.jact/jact.log";
+    public static final String JACT_LOG = "/.jact/log";
     /**
      * JAVA程序类路径
      */
@@ -36,7 +36,7 @@ public final class GlobalConstant {
      */
     public static final String JAR_PATH = new File(JAVA_CLASS_PATH).getAbsolutePath();
 
-    private GlobalConstant() {
+    private FileConstant() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 }

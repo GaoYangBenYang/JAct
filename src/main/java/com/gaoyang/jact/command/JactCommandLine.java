@@ -1,22 +1,18 @@
-package com.gaoyang.jact.component;
+package com.gaoyang.jact.command;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
-import java.io.File;
-
 @Component
 public class JactCommandLine implements CommandLineRunner {
-
-    private static final String FLAG_FILE = System.getProperty("user.home") + "/.jact/installed.flag";
 
     @Override
     public void run(String... args) {
         new CommandLine(new JactCommand()).execute(args);
     }
 
-    @CommandLine.Command(name = "jact", mixinStandardHelpOptions = false, version = "jact 1.0", description = "Jact CLI application")
+    @CommandLine.Command(name = "jact", version = "jact 1.0", description = "Jact CLI application")
     private static class JactCommand implements Runnable {
 
         @CommandLine.Command(name = "run", description = "Run the application")
@@ -36,9 +32,7 @@ public class JactCommandLine implements CommandLineRunner {
 
         @Override
         public void run() {
-            if (!new File(FLAG_FILE).exists()) {
                 CommandLine.usage(this, System.out);
-            }
         }
     }
 }
