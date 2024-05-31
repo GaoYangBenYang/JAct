@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
@@ -41,18 +42,17 @@ public class LogInfo implements LogTaskHandler {
      * 终止消息计数器，确保唯一性
      */
     private static final AtomicInteger poisonPillCount = new AtomicInteger(0);
-
     /**
-     * 日志文件路径
+     * 日志文件目录
      */
-    private static final String logFilePath = System.getProperty("user.home") + "/jact.log";
+    private static final String JACT_LOG_DIR = System.getProperty("os.name").toLowerCase() + File.separator + ".jact" + File.separator + "log";
 
     /**
      * 私有构造方法，初始化日志记录任务
      */
     private LogInfo() {
         VirtualThreadPool.submitTask(() -> {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(logFilePath, true))) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(JACT_LOG_DIR, true))) {
                 while (true) {
                     String message = logQueue.take();
                     if (message.equals(POISON_PILL)) {
