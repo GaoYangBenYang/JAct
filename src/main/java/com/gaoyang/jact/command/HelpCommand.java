@@ -2,11 +2,7 @@ package com.gaoyang.jact.command;
 
 import picocli.CommandLine;
 
-@CommandLine.Command(name = "jact", subcommands = {
-        RunCommand.class,
-        VersionCommand.class,
-        PingCommand.class
-})
+@CommandLine.Command(name = "help", description = "Application help documentation")
 public class HelpCommand implements Runnable {
     /**
      *

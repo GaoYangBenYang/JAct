@@ -1,16 +1,11 @@
 package com.gaoyang.jact.asynchronous.logger;
 
-
 import com.gaoyang.jact.asynchronous.VirtualThreadPool;
 import com.gaoyang.jact.asynchronous.interfaces.LogTaskHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -42,33 +37,25 @@ public class LogInfo implements LogTaskHandler {
      * 终止消息计数器，确保唯一性
      */
     private static final AtomicInteger poisonPillCount = new AtomicInteger(0);
-    /**
-     * 日志文件目录
-     */
-    private static final String JACT_LOG_DIR = System.getProperty("os.name").toLowerCase() + File.separator + ".jact" + File.separator + "log";
 
     /**
      * 私有构造方法，初始化日志记录任务
      */
     private LogInfo() {
         VirtualThreadPool.submitTask(() -> {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(JACT_LOG_DIR, true))) {
-                while (true) {
+            while (true) {
+                try {
                     String message = logQueue.take();
                     if (message.equals(POISON_PILL)) {
                         if (poisonPillCount.decrementAndGet() <= 0) {
                             break;
                         }
                     } else {
-                        writer.write(message);
-                        writer.newLine();
+                        logger.info(message);
                     }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            } catch (IOException e) {
-                logger.error("Failed to write log", e);
-                logToBackupFile("Failed to write log: " + e.getMessage());
             }
         });
     }
@@ -107,20 +94,6 @@ public class LogInfo implements LogTaskHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        VirtualThreadPool.shutdownExecutor(0, TimeUnit.SECONDS);
-    }
-
-    /**
-     * 当写入日志文件失败时，写入备用日志文件
-     *
-     * @param message 错误消息
-     */
-    private void logToBackupFile(String message) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(System.getProperty("user.home") + "/jact_backup.log", true))) {
-            writer.write(message);
-            writer.newLine();
-        } catch (IOException e) {
-            logger.error("Failed to write to backup log", e);
-        }
+        VirtualThreadPool.shutdownExecutor(1, TimeUnit.SECONDS);
     }
 }

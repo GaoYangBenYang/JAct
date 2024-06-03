@@ -5,11 +5,12 @@ import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
 @Component
+
 public class Command implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        new CommandLine(new HelpCommand()).execute(args);
+        new CommandLine(new JactCommand()).execute(args);
     }
 
 }
