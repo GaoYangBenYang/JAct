@@ -3,6 +3,8 @@ package com.gaoyang.jact.config;
 import com.gaoyang.jact.asynchronous.logger.ConsoleLog;
 import com.gaoyang.jact.asynchronous.logger.LogInfo;
 import com.gaoyang.jact.utils.constant.EmojiConstant;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,13 +31,17 @@ import java.util.Set;
 @Configuration
 public class InstallScript {
     /**
-     * 安装环境对应的操作系统
+     * 操作系统
      */
     private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
     /**
-     * 系统分隔符
+     * 系统环境变量分隔符
      */
     private static final String PATH_SEPARATOR = File.pathSeparator;
+    /**
+     * 系统路径分隔符
+     */
+    private static final String SEPARATOR = File.separator;
     /**
      * 用户目录
      */
@@ -43,11 +49,15 @@ public class InstallScript {
     /**
      * 配置文件
      */
-    private static final String JACT_XML = "/.jact/jact.xml";
+    private static final String JACT_JSON = USER_HOME + SEPARATOR + ".jact" + SEPARATOR + "jact.json";
     /**
-     * 日志文件
+     * 日志文件目录
      */
-    private static final String JACT_LOG = "/.jact/log";
+    private static final String JACT_LOG_DIR = USER_HOME + SEPARATOR + ".jact" + SEPARATOR + "log";
+    /**
+     * 环境变量备份文件
+     */
+    private static final String ENV_BACKUP = USER_HOME + SEPARATOR + ".jact" + SEPARATOR + "path_backup.txt";
     /**
      * JAVA程序类路径
      */
@@ -69,6 +79,10 @@ public class InstallScript {
             endlocal
             """;
     /**
+     * Windows脚本路径
+     */
+    private static final String WIN_SCRIPT_PATH = USER_HOME + SEPARATOR + ".jact" + SEPARATOR + "jact.bat";
+    /**
      * Unix脚本内容
      */
     private static final String UNIX_SCRIPT_CONTENT = """
@@ -78,13 +92,19 @@ public class InstallScript {
             # 执行jact
             "$SCRIPT_DIR/jact.exe" "$@"
             """;
+    /**
+     * Unix脚本路径
+     */
+    private static final String UNIX_SCRIPT_PATH = USER_HOME + SEPARATOR + ".jact" + SEPARATOR + "jact";
 
+    // 日志实例
     private final ConsoleLog consoleLog = ConsoleLog.getInstance();
-
     private final LogInfo logInfo = LogInfo.getInstance();
 
     /**
      * 根据操作系统进行对应的脚本创建以及执行
+     *
+     * @return CommandLineRunner实例
      */
     @Bean
     public CommandLineRunner createScript() {
@@ -94,70 +114,24 @@ public class InstallScript {
             } else {
                 createUnixScript();
             }
-            createXMLFile();
+            createJSONFile();
+            createLogDirectory();
         };
     }
 
     /**
-     * 创建Windows批量处理文件以及环境变量配置
+     * 创建Windows批处理文件以及环境变量配置
      */
     private void createWindowsScript() {
         try {
-
-            logSuccess("Initializes the script content.");
-            // 获取用户的主目录路径，将脚本配置在用户主目录下的.jact目录下
-            String scriptPath = USER_HOME + "\\.jact\\jact.bat";
-
-            // 在Windows脚本路径设置时，创建父目录（如果不存在）
-            File scriptFile = new File(scriptPath);
-            boolean scriptFileDir = scriptFile.getParentFile().mkdirs();
-            if (!scriptFileDir) {
-                logSuccess("Script path already exists.");
-            }
-            // 写入脚本内容
-            try (FileWriter writer = new FileWriter(scriptPath)) {
-                writer.write(WIN_SCRIPT_CONTENT);
-            }
-            logSuccess("Script writing success. Script file path: " + scriptPath);
-
-            //环境变量
-            String currentPath = System.getenv("PATH");
-            // 将 PATH 分割成数组
-            String[] paths = currentPath.split(PATH_SEPARATOR);
-            // 去除重复路径
-            Set<String> uniquePaths = new LinkedHashSet<>(Arrays.asList(paths));
-            // 转换为以路径分隔符分隔的字符串
-            String newUniquePathPath = String.join(PATH_SEPARATOR, uniquePaths);
-            // 备份当前的PATH
-            String backupPath = USER_HOME + "\\.jact\\path_backup.txt";
-            try (FileWriter writer = new FileWriter(backupPath)) {
-                writer.write(newUniquePathPath);
-            }
-            logSuccess("Environment variable backup succeeded. Backup file path: " + backupPath);
-
-            // 将脚本路径追加到现有PATH中
-            String scriptFilePath = scriptFile.getParent();
-            boolean contains = uniquePaths.contains(scriptFilePath);
-            String newPath;
-            if (contains) {
-                newPath = newUniquePathPath;
-            } else {
-                newPath = newUniquePathPath + PATH_SEPARATOR + scriptFilePath;
-            }
-            // 使用ProcessBuilder更新环境变量
-            ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", "setx", "PATH", "\"" + newPath + "\"");
-            Process process = processBuilder.start();
-            int exitCode = process.waitFor();
-            if (exitCode == 0) {
-                logSuccess("Environment variable write successfully.");
-                logSuccess("jact command installed. You may need to restart your terminal.");
-            } else {
-                logError("Failed to update environment variable. Exit code: " + exitCode, null);
-            }
+            // 创建脚本文件并写入内容
+            createScriptFile(WIN_SCRIPT_PATH, WIN_SCRIPT_CONTENT);
+            // 备份并设置环境变量
+            backupAndSetEnvironmentVariable(WIN_SCRIPT_PATH);
         } catch (IOException e) {
-            logInfo.handleTask("Failed to update environment variable. Exit code: " + e);
+            logError("Failed to create Windows script", e);
         } catch (InterruptedException e) {
-            logInfo.handleTask("Failed to update environment variable. Exit code: " + e);
+            logError("Failed to create Windows script", e);
         } finally {
             consoleLog.shutdown();
         }
@@ -168,63 +142,167 @@ public class InstallScript {
      */
     private void createUnixScript() {
         try {
-            //创建脚本目录
-            Files.createDirectories(Paths.get(USER_HOME + "/.jact"));
-            logSuccess("Initializes the unix script content.");
-
-            // 获取用户的主目录路径，将脚本配置在用户主目录下的.jact目录下
-            Path scriptPath = Paths.get(USER_HOME + "/.jact/jact");
-            //写入脚本
-            Files.write(scriptPath, UNIX_SCRIPT_CONTENT.getBytes());
-            logSuccess("Script writing success. Script file path: " + scriptPath);
-
-            //执行脚本
-            Set<PosixFilePermission> perms = new HashSet<>();
-            perms.add(PosixFilePermission.OWNER_READ);
-            perms.add(PosixFilePermission.OWNER_WRITE);
-            perms.add(PosixFilePermission.OWNER_EXECUTE);
-            perms.add(PosixFilePermission.GROUP_READ);
-            perms.add(PosixFilePermission.GROUP_EXECUTE);
-            perms.add(PosixFilePermission.OTHERS_READ);
-            perms.add(PosixFilePermission.OTHERS_EXECUTE);
-            Files.setPosixFilePermissions(scriptPath, perms);
-            logSuccess("Script execution succeeds.");
-
-            // 环境变量
-            String currentPath = System.getenv("PATH");
-            // 将 PATH 分割成数组
-            String[] paths = currentPath.split(PATH_SEPARATOR);
-            // 去除重复路径
-            Set<String> uniquePaths = new LinkedHashSet<>(Arrays.asList(paths));
-            // 转换为以路径分隔符分隔的字符串
-            String newUniquePathPath = String.join(PATH_SEPARATOR, uniquePaths);
-            // 备份文件路径
-            String backupPath = USER_HOME + "/.jact/path_backup.txt";
-            // 备份当前的PATH
-            Files.write(Paths.get(backupPath), newUniquePathPath.getBytes());
-            logSuccess("Environment variable backup succeeded. Backup file path: " + backupPath);
-
-            // 将新路径追加到现有PATH中
-            String newPath = new File(String.valueOf(scriptPath)).getParent();
-            String exportCommand = "export PATH=\"$PATH:" + newPath + "\"";
-            Files.write(Paths.get(USER_HOME + "/.jact/jact.sh"), exportCommand.getBytes());
-            logSuccess("jact command installed. You may need to restart your terminal.");
+            // 创建脚本文件并写入内容
+            createScriptFile(UNIX_SCRIPT_PATH, UNIX_SCRIPT_CONTENT);
+            // 设置脚本的执行权限
+            setScriptPermissions();
+            // 备份并设置环境变量
+            backupAndSetEnvironmentVariable(UNIX_SCRIPT_PATH);
         } catch (IOException e) {
             logError("Failed to create Unix script", e);
+        } catch (InterruptedException e) {
+            logError("Failed to create Unix script", e);
+        } finally {
+            consoleLog.shutdown();
         }
     }
 
     /**
-     * 创建Jact CLI XML配置文件
+     * 创建脚本文件并写入内容
+     *
+     * @param scriptPath 脚本文件路径
+     * @param content    脚本内容
+     * @throws IOException 如果写入文件时发生错误
      */
-    private void createXMLFile() {
-        File flagFile = new File(JACT_XML);
+    private void createScriptFile(String scriptPath, String content) throws IOException {
+        // 创建脚本文件的父目录（如果不存在）
+        File scriptFile = new File(scriptPath);
+        boolean scriptFileDir = scriptFile.getParentFile().mkdirs();
+        if (!scriptFileDir) {
+            logSuccess("Script path already exists.");
+        }
+
+        // 写入脚本内容
+        try (FileWriter writer = new FileWriter(scriptPath)) {
+            writer.write(content);
+        }
+        logSuccess("Script writing success. Script file path: " + scriptPath);
+    }
+
+    /**
+     * 备份并设置环境变量
+     *
+     * @param scriptPath 脚本文件路径
+     * @throws IOException          如果写入文件时发生错误
+     * @throws InterruptedException 如果设置环境变量时发生错误
+     */
+    private void backupAndSetEnvironmentVariable(String scriptPath) throws IOException, InterruptedException {
+        // 获取当前的PATH环境变量
+        String currentPath = System.getenv("PATH");
+
+        // 将 PATH 分割成数组并去除重复路径
+        String[] paths = currentPath.split(PATH_SEPARATOR);
+        Set<String> uniquePaths = new LinkedHashSet<>(Arrays.asList(paths));
+        String newUniquePathPath = String.join(PATH_SEPARATOR, uniquePaths);
+
+        // 备份当前的PATH
+        try (FileWriter writer = new FileWriter(ENV_BACKUP)) {
+            writer.write(newUniquePathPath);
+        }
+        logSuccess("Environment variable backup succeeded. Backup file path: " + ENV_BACKUP);
+
+        // 将脚本路径追加到现有PATH中
+        String newPath = OS_NAME.contains("win") ? scriptPath : new File(scriptPath).getParent();
+        boolean contains = uniquePaths.contains(newPath);
+        String finalPath = contains ? newUniquePathPath : newUniquePathPath + PATH_SEPARATOR + newPath;
+
+        // 使用ProcessBuilder更新环境变量
+        if (OS_NAME.contains("win")) {
+            ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", "setx", "PATH", "\"" + finalPath + "\"");
+            Process process = processBuilder.start();
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                logSuccess("Environment variable write successfully.");
+                logSuccess("jact command installed. You may need to restart your terminal.");
+            } else {
+                logError("Failed to update environment variable. Exit code: " + exitCode, null);
+            }
+        } else {
+            String exportCommand = "export PATH=\"$PATH:" + newPath + "\"";
+            Files.write(Paths.get(USER_HOME + "/.jact/jact.sh"), exportCommand.getBytes());
+            logSuccess("jact command installed. You may need to restart your terminal.");
+        }
+    }
+
+    /**
+     * 设置Unix脚本的执行权限
+     *
+     * @throws IOException 如果设置权限时发生错误
+     */
+    private void setScriptPermissions() throws IOException {
+        Path path = Paths.get(UNIX_SCRIPT_PATH);
+        Set<PosixFilePermission> perms = new HashSet<>();
+        perms.add(PosixFilePermission.OWNER_READ);
+        perms.add(PosixFilePermission.OWNER_WRITE);
+        perms.add(PosixFilePermission.OWNER_EXECUTE);
+        perms.add(PosixFilePermission.GROUP_READ);
+        perms.add(PosixFilePermission.GROUP_EXECUTE);
+        perms.add(PosixFilePermission.OTHERS_READ);
+        perms.add(PosixFilePermission.OTHERS_EXECUTE);
+        Files.setPosixFilePermissions(path, perms);
+        logSuccess("Script execution succeeds.");
+    }
+
+    /**
+     * 创建Jact CLI JSON配置文件
+     */
+    private void createJSONFile() {
+        File flagFile = new File(JACT_JSON);
         try {
-            if (flagFile.getParentFile().mkdirs() || flagFile.createNewFile()) {
-                logSuccess("XML configuration file created.");
+            // 创建父目录
+            File parentDir = flagFile.getParentFile();
+            if (parentDir != null && !parentDir.exists()) {
+                if (parentDir.mkdirs()) {
+                    logSuccess("Parent directories created.");
+                } else {
+                    logError("Failed to create parent directories.", null);
+                    return;
+                }
+            }
+
+            // 创建新文件并写入默认配置
+            if (flagFile.createNewFile()) {
+                logSuccess("JSON configuration file created.");
+                writeDefaultConfig(flagFile);
+            } else {
+                logError("JSON configuration file already exists or failed to create.", null);
             }
         } catch (IOException e) {
-            logError("Description Failed to create the XML configuration file.", e);
+            logError("Failed to create the JSON configuration file.", e);
+        }
+    }
+
+    /**
+     * 写入默认配置
+     *
+     * @param file JSON配置文件
+     */
+    private void writeDefaultConfig(File file) {
+        try (FileWriter writer = new FileWriter(file)) {
+            JsonObject config = new JsonObject();
+            config.addProperty("version", "1.0");
+            // 可以根据需要添加更多默认配置
+            Gson gson = new Gson();
+            gson.toJson(config, writer);
+            logSuccess("Default configuration written to JSON file.");
+        } catch (IOException e) {
+            logError("Failed to write default configuration to JSON file.", e);
+        }
+    }
+
+    /**
+     * 创建日志目录
+     */
+    private void createLogDirectory() {
+        File logDir = new File(JACT_LOG_DIR);
+        if (!logDir.exists()) {
+            if (logDir.mkdirs()) {
+                logSuccess("Log directory created.");
+            } else {
+                logError("Failed to create log directory.", null);
+            }
+        } else {
+            logSuccess("Log directory already exists.");
         }
     }
 
