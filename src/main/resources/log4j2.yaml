@@ -1,16 +1,135 @@
 Configuration:
-  status: WARN
+  # 定义日志输出目录
+  properties:
+    property:
+      name: LOG_HOME # 日志目录名称变量
+      value: ${sys:user.home}/.jact/logs # 日志目录路径
+
   Appenders:
-    RollingFile:
-      name: RollingFile
-      fileName: ${sys:user.home}/.jact/log/app.log
-      filePattern: ${sys:user.home}/.jact/log/app-%d{yyyy-MM-dd}.log
+    # 控制台日志输出器
+    console:
+      name: consoleAppender # 输出器名称
+      target: SYSTEM_OUT # 输出目标为系统标准输出
       PatternLayout:
-        pattern: "%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n"
-      Policies:
-        TimeBasedTriggeringPolicy: {}
+        pattern: "%style{%d{ISO8601}}{bright,green} %highlight{%-5level} [%style{%t}{bright,blue}] %style{%C{}}{bright,yellow}: %msg%n%style{%throwable}{red}" # 日志格式及颜色
+        disableAnsi: false # 允许使用ANSI颜色
+        noConsoleNoAnsi: false # 非控制台输出时仍使用ANSI颜色
+
+    # 文件日志输出器
+    RollingFile:
+      - name: allFileAppender # all级别日志输出器
+        fileName: ${LOG_HOME}/all.log # 日志文件路径
+        filePattern: ${LOG_HOME}/$${date:yyyy-MM}/all-%d{yyyy-MM-dd}.log # 日志文件滚动命名模式
+        PatternLayout:
+          pattern: "%d %p %C{} [%t] %m%n" # 日志格式
+        Policies:
+          SizeBasedTriggeringPolicy:
+            size: 100 MB # 日志文件大小限制，超过该大小触发滚动
+          TimeBasedTriggeringPolicy: {} # 基于时间的滚动策略
+        DefaultRolloverStrategy:
+          max: 100 # 最大文件个数限制
+
+      - name: debugFileAppender # debug级别日志输出器
+        fileName: ${LOG_HOME}/debug.log # 日志文件路径
+        filePattern: ${LOG_HOME}/$${date:yyyy-MM}/debug-%d{yyyy-MM-dd}-%i.log.gz # 日志文件滚动命名模式
+        Filters:
+          ThresholdFilter:
+            level: info # 过滤info及更高级别的日志
+            onMatch: DENY # 匹配时拒绝
+            onMismatch: NEUTRAL # 不匹配时通过
+        PatternLayout:
+          pattern: "%d %p %C{} [%t] %m%n" # 日志格式
+        Policies:
+          SizeBasedTriggeringPolicy:
+            size: 100 MB # 日志文件大小限制，超过该大小触发滚动
+          TimeBasedTriggeringPolicy: {} # 基于时间的滚动策略
+        DefaultRolloverStrategy:
+          max: 100 # 最大文件个数限制
+
+      - name: infoFileAppender # info级别日志输出器
+        fileName: ${LOG_HOME}/info.log # 日志文件路径
+        filePattern: ${LOG_HOME}/$${date:yyyy-MM}/info-%d{yyyy-MM-dd}-%i.log.gz # 日志文件滚动命名模式
+        Filters:
+          ThresholdFilter:
+            level: warn # 过滤warn及更高级别的日志
+            onMatch: DENY # 匹配时拒绝
+            onMismatch: NEUTRAL # 不匹配时通过
+        PatternLayout:
+          pattern: "%d %p %C{} [%t] %m%n" # 日志格式
+        Policies:
+          SizeBasedTriggeringPolicy:
+            size: 100 MB # 日志文件大小限制，超过该大小触发滚动
+          TimeBasedTriggeringPolicy:
+            interval: 1 # 滚动间隔时间
+            modulate: true # 调节滚动时间，使滚动时间更加均匀
+
+      - name: warnFileAppender # warn级别日志输出器
+        fileName: ${LOG_HOME}/warn.log # 日志文件路径
+        filePattern: ${LOG_HOME}/$${date:yyyy-MM}/warn-%d{yyyy-MM-dd}-%i.log.gz # 日志文件滚动命名模式
+        Filters:
+          ThresholdFilter:
+            level: error # 过滤error及更高级别的日志
+            onMatch: DENY # 匹配时拒绝
+            onMismatch: NEUTRAL # 不匹配时通过
+        PatternLayout:
+          pattern: "%d %p %C{} [%t] %m%n" # 日志格式
+        Policies:
+          SizeBasedTriggeringPolicy:
+            size: 100 MB # 日志文件大小限制，超过该大小触发滚动
+          TimeBasedTriggeringPolicy: {} # 基于时间的滚动策略
+        DefaultRolloverStrategy:
+          max: 100 # 最大文件个数限制
+
+      - name: errorFileAppender # error级别日志输出器
+        fileName: ${LOG_HOME}/error.log # 日志文件路径
+        filePattern: ${LOG_HOME}/$${date:yyyy-MM}/error-%d{yyyy-MM-dd}-%i.log.gz # 日志文件滚动命名模式
+        PatternLayout:
+          pattern: "%d %p %C{} [%t] %m%n" # 日志格式
+        Policies:
+          SizeBasedTriggeringPolicy:
+            size: 100 MB # 日志文件大小限制，超过该大小触发滚动
+          TimeBasedTriggeringPolicy: {} # 基于时间的滚动策略
+        DefaultRolloverStrategy:
+          max: 100 # 最大文件个数限制
+
+      - name: errorJsonAppender # JSON格式error级别日志输出器
+        fileName: ${LOG_HOME}/error-json.log # 日志文件路径
+        filePattern: ${LOG_HOME}/error-json-%d{yyyy-MM-dd}-%i.log.gz # 日志文件滚动命名模式
+        JSONLayout:
+          compact: true # 紧凑模式
+          eventEol: true # 每个日志事件换行
+          locationInfo: true # 包含位置信息
+        Policies:
+          SizeBasedTriggeringPolicy:
+            size: 100 MB # 日志文件大小限制，超过该大小触发滚动
+          TimeBasedTriggeringPolicy:
+            interval: 1 # 滚动间隔时间
+            modulate: true # 调节滚动时间，使滚动时间更加均匀
+
   Loggers:
     Root:
-      level: info
+      level: debug # 根日志记录器级别
       AppenderRef:
-        - ref: RollingFile
+        - ref: allFileAppender # 引用all级别日志输出器
+          level: all
+        - ref: consoleAppender # 引用控制台日志输出器
+          level: debug
+        - ref: debugFileAppender # 引用debug级别日志输出器
+          level: debug
+        - ref: infoFileAppender # 引用info级别日志输出器
+          level: info
+        - ref: warnFileAppender # 引用warn级别日志输出器
+          level: warn
+        - ref: errorFileAppender # 引用error级别日志输出器
+          level: error
+        - ref: errorJsonAppender # 引用JSON格式error级别日志输出器
+          level: error
+
+    # 定义其他日志记录器
+    Logger:
+      - name: org.springframework # Spring日志记录器
+        level: debug
+      - name: druid.sql.Statement # Druid数据源日志记录器
+        level: warn
+      - name: com.mybatis # MyBatis日志记录器
+        level: warn

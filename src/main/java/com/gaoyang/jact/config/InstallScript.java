@@ -53,7 +53,27 @@ public class InstallScript {
     /**
      * 日志文件目录
      */
-    private static final String JACT_LOG_DIR = USER_HOME + SEPARATOR + ".jact" + SEPARATOR + "log";
+    private static final String JACT_LOG_DIR = USER_HOME + SEPARATOR + ".jact" + SEPARATOR + "logs";
+    /**
+     * all级别日志文件目录
+     */
+    private static final String JACT_LOG_ALL_DIR = JACT_LOG_DIR + SEPARATOR + "all";
+    /**
+     * debug级别日志文件目录
+     */
+    private static final String JACT_LOG_DEBUG_DIR = JACT_LOG_DIR + SEPARATOR + "debug";
+    /**
+     * info级别日志文件目录
+     */
+    private static final String JACT_LOG_INFO_DIR = JACT_LOG_DIR + SEPARATOR + "info";
+    /**
+     * warn级别日志文件目录
+     */
+    private static final String JACT_LOG_WARN_DIR = JACT_LOG_DIR + SEPARATOR + "warn";
+    /**
+     * error级别日志文件目录
+     */
+    private static final String JACT_LOG_ERROR_DIR = JACT_LOG_DIR + SEPARATOR + "error";
     /**
      * 环境变量备份文件
      */
@@ -294,15 +314,31 @@ public class InstallScript {
      * 创建日志目录
      */
     private void createLogDirectory() {
-        File logDir = new File(JACT_LOG_DIR);
-        if (!logDir.exists()) {
-            if (logDir.mkdirs()) {
-                logSuccess("Log directory created.");
+        // 创建基础日志目录
+        createDirectory(JACT_LOG_DIR);
+        // 创建各级别日志目录
+        createDirectory(JACT_LOG_ALL_DIR);
+        createDirectory(JACT_LOG_DEBUG_DIR);
+        createDirectory(JACT_LOG_INFO_DIR);
+        createDirectory(JACT_LOG_WARN_DIR);
+        createDirectory(JACT_LOG_ERROR_DIR);
+    }
+
+    /**
+     * 创建单个目录
+     *
+     * @param dirPath 目录路径
+     */
+    private void createDirectory(String dirPath) {
+        File dir = new File(dirPath);
+        if (!dir.exists()) {
+            if (dir.mkdirs()) {
+                logSuccess("Log directory created: " + dirPath);
             } else {
-                logError("Failed to create log directory.", null);
+                logError("Failed to create log directory: " + dirPath, null);
             }
         } else {
-            logSuccess("Log directory already exists.");
+            logSuccess("Log directory already exists: " + dirPath);
         }
     }
 

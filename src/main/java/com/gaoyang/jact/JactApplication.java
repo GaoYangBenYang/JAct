@@ -8,6 +8,7 @@ public class JactApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(JactApplication.class, args);
+
     }
 
 }
