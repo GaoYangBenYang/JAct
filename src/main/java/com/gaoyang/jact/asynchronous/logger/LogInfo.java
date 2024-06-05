@@ -2,8 +2,8 @@ package com.gaoyang.jact.asynchronous.logger;
 
 import com.gaoyang.jact.asynchronous.VirtualThreadPool;
 import com.gaoyang.jact.asynchronous.interfaces.LogTaskHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.BlockingQueue;
@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 public class LogInfo implements LogTaskHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LogInfo.class);
+    private static final Logger LOGGER = LogManager.getLogger(LogInfo.class);
     /**
      * 阻塞队列，用于存储日志消息
      */
