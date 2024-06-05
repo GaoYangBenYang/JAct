@@ -5,6 +5,4 @@ spring:
     banner-mode: off
     lazy-initialization: true
 logging:
-  config:  classpath:log4j2.xml
-  level:
-    org.springframework: info
+  config: classpath:log4j2.xml

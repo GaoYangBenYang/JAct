@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--status：是用于指定log4j的级别；monitorterval：是用于指定log4j自动重新检测读取配置内容的间隔时间，单位为秒（s），最小值为5秒。-->
-<Configuration status="INFO" monitorInterval="30">
+<Configuration status="info" monitorInterval="30">
     <!--配置日志的路径-->
     <properties>
         <property name="LOG_HOME">${sys:user.home}/.jact/logs</property>
@@ -143,8 +143,8 @@
     <Loggers>
         <!-- 根日志设置 -->
         <Root level="debug">
+            <AppenderRef ref="consoleAppender" level="off"/>
             <AppenderRef ref="allFileAppender" level="all"/>
-            <AppenderRef ref="consoleAppender" level="debug"/>
             <AppenderRef ref="debugFileAppender" level="debug"/>
             <AppenderRef ref="infoFileAppender" level="info"/>
             <AppenderRef ref="warnFileAppender" level="warn"/>
@@ -155,9 +155,9 @@
         <!--spring日志-->
         <Logger name="org.springframework" level="debug"/>
         <!--druid数据源日志-->
-        <Logger name="druid.sql.Statement" level="warn"/>
+        <Logger name="druid.sql.Statement" level="debug"/>
         <!-- mybatis日志 -->
-        <Logger name="com.mybatis" level="warn"/>
+        <Logger name="com.mybatis" level="debug"/>
     </Loggers>
 
 </Configuration>
