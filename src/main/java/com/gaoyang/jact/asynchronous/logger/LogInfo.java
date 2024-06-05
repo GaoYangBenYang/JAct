@@ -2,8 +2,8 @@ package com.gaoyang.jact.asynchronous.logger;
 
 import com.gaoyang.jact.asynchronous.VirtualThreadPool;
 import com.gaoyang.jact.asynchronous.interfaces.LogTaskHandler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.BlockingQueue;
@@ -17,16 +17,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 public class LogInfo implements LogTaskHandler {
 
-    private static final Logger logger = LogManager.getLogger(LogInfo.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LogInfo.class);
     /**
      * 阻塞队列，用于存储日志消息
      */
-    private static final BlockingQueue<String> logQueue = new LinkedBlockingQueue<>();
+    private static final BlockingQueue<String> LOG_QUEUE = new LinkedBlockingQueue<>();
 
     /**
      * 日志单例实例
      */
-    private static final LogInfo instance = new LogInfo();
+    private static final LogInfo INSTANCE = new LogInfo();
 
     /**
      * 终止消息
@@ -36,7 +36,7 @@ public class LogInfo implements LogTaskHandler {
     /**
      * 终止消息计数器，确保唯一性
      */
-    private static final AtomicInteger poisonPillCount = new AtomicInteger(0);
+    private static final AtomicInteger POISON_PILL_COUNT = new AtomicInteger(0);
 
     /**
      * 私有构造方法，初始化日志记录任务
@@ -45,13 +45,13 @@ public class LogInfo implements LogTaskHandler {
         VirtualThreadPool.submitTask(() -> {
             while (true) {
                 try {
-                    String message = logQueue.take();
+                    String message = LOG_QUEUE.take();
                     if (message.equals(POISON_PILL)) {
-                        if (poisonPillCount.decrementAndGet() <= 0) {
+                        if (POISON_PILL_COUNT.decrementAndGet() <= 0) {
                             break;
                         }
                     } else {
-                        logger.info(message);
+                        LOGGER.info(message);
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -66,7 +66,7 @@ public class LogInfo implements LogTaskHandler {
      * @return 日志实例
      */
     public static LogInfo getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     /**
@@ -77,7 +77,7 @@ public class LogInfo implements LogTaskHandler {
     @Override
     public void handleTask(String message) {
         try {
-            logQueue.put(message);
+            LOG_QUEUE.put(message);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -89,8 +89,8 @@ public class LogInfo implements LogTaskHandler {
     @Override
     public void shutdown() {
         try {
-            poisonPillCount.incrementAndGet();
-            logQueue.put(POISON_PILL);
+            POISON_PILL_COUNT.incrementAndGet();
+            LOG_QUEUE.put(POISON_PILL);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
