@@ -9,8 +9,4 @@ public final class EmojiConstant {
     public static final String WARN = "⚠️";
     public static final String ERROR = "❌";
 
-    private EmojiConstant() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
-    }
-
 }

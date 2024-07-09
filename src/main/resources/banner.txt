@@ -1,5 +1,7 @@
+${AnsiColor.BRIGHT_CYAN}
         _____        __
        / /   | _____/ /_
   __  / / /| |/ ___/ __/
  / /_/ / ___ / /__/ /_
  \____/_/  |_\___/\__/
+                     Version: ${application.version}

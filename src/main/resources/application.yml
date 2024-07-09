@@ -1,8 +1,10 @@
+application:
+  version: 1.0.0
 spring:
   application:
     name: Jact
   main:
-    banner-mode: off
+    banner-mode: console
     lazy-initialization: true
 logging:
   config: classpath:log4j2.xml

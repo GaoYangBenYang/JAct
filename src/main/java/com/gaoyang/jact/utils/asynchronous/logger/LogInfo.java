@@ -1,7 +1,7 @@
-package com.gaoyang.jact.asynchronous.logger;
+package com.gaoyang.jact.utils.asynchronous.logger;
 
-import com.gaoyang.jact.asynchronous.VirtualThreadPool;
-import com.gaoyang.jact.asynchronous.interfaces.LogTaskHandler;
+import com.gaoyang.jact.utils.asynchronous.VirtualThreadPool;
+import com.gaoyang.jact.utils.asynchronous.interfaces.LogTaskHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;

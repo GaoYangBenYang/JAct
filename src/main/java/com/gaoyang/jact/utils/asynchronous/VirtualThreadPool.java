@@ -1,4 +1,4 @@
-package com.gaoyang.jact.asynchronous;
+package com.gaoyang.jact.utils.asynchronous;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

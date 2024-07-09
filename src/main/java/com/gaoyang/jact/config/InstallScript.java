@@ -1,7 +1,7 @@
 package com.gaoyang.jact.config;
 
-import com.gaoyang.jact.asynchronous.logger.ConsoleLog;
-import com.gaoyang.jact.asynchronous.logger.LogInfo;
+import com.gaoyang.jact.utils.asynchronous.logger.ConsoleLog;
+import com.gaoyang.jact.utils.asynchronous.logger.LogInfo;
 import com.gaoyang.jact.utils.constant.EmojiConstant;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -116,8 +116,9 @@ public class InstallScript {
      * Unix脚本路径
      */
     private static final String UNIX_SCRIPT_PATH = USER_HOME + SEPARATOR + ".jact" + SEPARATOR + "jact";
-
-    // 日志实例
+    /**
+     * 日志实例
+     */
     private final ConsoleLog consoleLog = ConsoleLog.getInstance();
     private final LogInfo logInfo = LogInfo.getInstance();
 
@@ -300,7 +301,7 @@ public class InstallScript {
     private void writeDefaultConfig(File file) {
         try (FileWriter writer = new FileWriter(file)) {
             JsonObject config = new JsonObject();
-            config.addProperty("version", "1.0");
+            config.addProperty("version", "1.0.0");
             // 可以根据需要添加更多默认配置
             Gson gson = new Gson();
             gson.toJson(config, writer);
