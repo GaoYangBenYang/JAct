@@ -1,4 +1,4 @@
-package com.gaoyang.jact.asynchronous.interfaces;
+package com.gaoyang.jact.utils.asynchronous.interfaces;
 
 /**
  * 任务处理接口，定义任务处理方法

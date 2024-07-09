@@ -1,6 +1,6 @@
 package com.gaoyang.jact.command;
 
-import com.gaoyang.jact.asynchronous.VirtualThreadPool;
+import com.gaoyang.jact.utils.asynchronous.VirtualThreadPool;
 import picocli.CommandLine;
 
 // 定义版本命令类
